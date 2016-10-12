@@ -10,9 +10,7 @@ Usage:
     See documentation for usage.
 '''
 
-import nltk
-from nltk.corpus import cmudict
-from nltk.corpus import words
+import pickle
 import re
 import random
 import time
@@ -22,14 +20,14 @@ class Poet(object):
     def __init__(self, full=False):
 
         # Import the CMU dictionary of pronunciation and stress
-        self.dict = cmudict.dict()
+        self.dict = pickle.load( open('cmudict.p', 'rb') )
 
         # Get the separated entries of the CMU dictionary
-        self.entries = cmudict.entries()
+        self.entries = pickle.load( open('entries.p', 'rb') )
 
         if full:
             # Get all the words in the CMU dictionary
-            self.word_list = [word.lower() for (word,_) in cmudict.entries()]
+            self.word_list = [word.lower() for (word,_) in self.entries]
 
         else:
             # Get the 10,000 most common words from Google
