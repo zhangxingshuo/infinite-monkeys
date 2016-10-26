@@ -5,9 +5,46 @@ Extensible class for generating prose and and poetry
 using the Natural Language Toolkit and the Carnegie 
 Mellon Pronunciation Dictionary
 
+"Given an infinite number monkeys at an infinite number of
+typewriters working for an infinite amount of time, one will
+eventually produce a work worthy of Shakespeare"
+                                    -- A popular saying
+
 Usage:
 ------
-    See documentation for usage.
+    The Poet object supports composition of haikus, love poems,
+    limericks, sonnets, and villanelles, with more forms of 
+    poetry planned. 
+
+    To use, create a Poet instance and call the corresponding
+    print poem function. For example,
+
+    >>> p = Poet()
+    >>> p.print_haiku()
+
+    A Nonsense Haiku
+    By Poetry Bot
+
+    Quantum dimension
+    Offense guardian save bring
+    Thank validation
+
+    Composed in 0.01 seconds
+
+
+    Different forms of poetry have different runtimes, depending
+    on their complexity. The average runtime for 10 trials is
+
+               | Average | Maximum | Minimum |
+    Love Poem  |  0.83s  |  0.84s  |  0.83s  |
+    Haiku      |  0.00s  |  0.00s  |  0.00s  |
+    Doublet    |  4.33s  |  7.56s  |  1.69s  |
+    Limerick   |  5.08s  |  8.16s  |  4.17s  |
+    Sonnet     | 20.51s  | 26.87s  | 12.54s  | 
+    Quatrain   |  5.75s  | 10.36s  |  4.08s  |
+    Villanelle | 30.15s  | 59.61s  | 13.33s  |
+    Ballade    |         |         |         |
+
 '''
 
 import pickle
@@ -126,9 +163,8 @@ class Poet(object):
         '''
         Composes a Shakespearean sonnet and prints it to console
 
-        Note: Sonnets probably take the longest to generate
-        as they follow a strict meter and have the most rhyming
-        lines to generate
+        Note: Sonnects are complex, with multiple rhyming lines and
+        a strict meter, so composition might take longer than others.
         '''
 
         start = time.time()
@@ -143,6 +179,95 @@ class Poet(object):
         final_poem = self.format_poem(sonnet, title='A Nonsense Sonnet')
         print(final_poem)
         print('Composed in %0.2f seconds' % (end-start))
+
+    def print_quatrain(self):
+        '''
+        Composes a Frostian quatrain and prints it to console
+        '''
+
+        start = time.time()
+
+        quatrain = self.compose_quatrain()
+
+        while None in quatrain:
+            quatrain = self.compose_quatrain()
+
+        end = time.time()
+
+        final_poem = self.format_poem(quatrain, title='A Nonsense Quatrain')
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def print_villanelle(self):
+        '''
+        Composes a villanelle and prints it to console
+
+        Note that villanelles are longer and need a special method
+        to handle printing
+        '''
+
+        start = time.time()
+
+        villanelle = self.compose_villanelle()
+
+        while None in villanelle:
+            villanelle = self.compose_villanelle()
+
+        end = time.time()
+
+        title = self.generate_title(villanelle)
+
+        final_poem = '\n"' + title + '"' + '\nA Nonsense Villanelle\nBy Poetry Bot\n\n'
+
+        # Add first four tercets
+        for i in range(4):
+            for j in range(3):
+                string_to_add = ' '.join(villanelle[3*i+j])
+                final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+            final_poem += '\n'
+
+        # Add last stanza
+        for k in range(15,19):
+            string_to_add = ' '.join(villanelle[k])
+            final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def print_ballade(self):
+        '''
+        Composes a ballade and prints to console
+
+        Since this is a complex poem with multiple rhyming lines, expect
+        runtime to vary
+        '''
+
+        start = time.time()
+
+        ballade = self.compose_ballade()
+
+        while None in ballade:
+            ballade = self.compose_ballade()
+
+        end = time.time()
+
+        final_poem = '\nA Nonsense Ballade\nBy Poetry Bot\n\n'
+
+        # Add first stanza
+        for i in range(8):
+            string_to_add = ' '.join(ballade[i])
+            final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+
+        final_poem += '\n'
+
+        # Add envoy
+        for j in range(8,12):
+            string_to_add = ' '.join(ballade[j])
+            final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
 
     #########################
     ### Sentence cleaning ###
@@ -181,8 +306,11 @@ class Poet(object):
         Formats a list of lines into a nice poem
         '''
 
+        # Generate random title
+        rand_title = self.generate_title(poem)
+
         # Format title and author lines
-        string_poem = '\n' + title + '\nBy ' + author + '\n\n'
+        string_poem = '\n"' + rand_title + '"\n' + title + '\nBy ' + author + '\n\n'
 
         for line in poem[:-1]:
             string_poem += self.format_line(line)
@@ -190,6 +318,52 @@ class Poet(object):
 
         return string_poem
 
+    def generate_title(self, poem, length=0):
+        '''
+        Given a poem, which is formatted as an array of string arrays,
+        randomly generate a title
+        '''
+
+        # determine the length of title
+        if length == 0:
+            length = random.randint(1, 5)
+
+            # short poems should have shorter titles
+            length = min(length, len(poem))
+
+        title = []
+
+        # Get a random word from random line
+        for _ in range(length):
+            rand_line = random.choice(poem)
+            rand_word = random.choice(rand_line)
+
+            # Titles are capitalized
+            title += [rand_word[0].upper() + rand_word[1:]]
+
+        return ' '.join(title)
+
+
+    ######################
+    ### Corpus Loading ###
+    ######################
+
+    def load(self, filename):
+        '''
+        Overwrites the 10,000 most common English words with a new
+        set of words generated from a corpus of text
+        '''
+
+        new_word_list = set()
+
+        file = open(filename)
+        raw_text = file.read().split()
+        for word in raw_text:
+            clean_word = self.sanitize(word)
+            if clean_word in self.dict:
+                new_word_list.update([clean_word])
+
+        self.word_list = list(new_word_list)
 
     ###############
     ### Cadence ###
@@ -326,10 +500,11 @@ class Poet(object):
         else:
             return None
 
-        # Default rhyme level is 1
-        rhyme_level = num_elements - 1
-        if rhyme_level < 1:
-            rhyme_level = 1
+        # Shorter words need higher rhyme levels to sound right
+        if num_elements < 4:
+            rhyme_level = num_elements
+        else:
+            rhyme_level = num_elements - 1
 
         rhymes = self.rhyme_set(input_word, rhyme_level, restricted)
 
@@ -460,6 +635,41 @@ class Poet(object):
                 return None
             else:
                 return last_line
+
+    def generate_multi_line(self, pattern, last_word, num_lines):
+        '''
+        Generates the specified number of matching lines
+
+        Note that this might take a long time, especially with many lines
+        '''
+
+        # Check if last_word has enough rhymes
+        if self.rhyme(last_word, min_rhymes=num_lines) is None:
+            return None
+
+        lines = []
+
+        restricted_rhymes = set()
+
+        for line in range(num_lines):
+
+            line_to_add = self.generate_matching_line(pattern, last_word, 
+                restricted=restricted_rhymes)
+
+            # Need valid line to add
+            while line_to_add is None:
+                line_to_add = self.generate_matching_line(pattern, last_word, 
+                    restricted=restricted_rhymes)
+
+            restricted_rhymes.update([line_to_add[-1]])
+
+            lines.append(line_to_add)
+            
+            # Comment out if need to see progress of multi-line generation
+            # print(line)
+
+        return lines
+
 
     ##############
     ### Poetry ###
@@ -629,3 +839,157 @@ class Poet(object):
         lines[-2] = doublets[-1][1]
 
         return lines
+
+    def compose_quatrain(self):
+        '''
+        Composes an alternating quatrain in iambic tetrameter,
+        in the style of Robert Frost.
+
+        Each line in the poem has the cadence
+        *1*1*1*1
+
+        The poem has AABA rhyme scheme.
+        '''
+
+        lines = [None] * 4
+
+        cadence = '*1*1*1*1'
+
+        restricted_rhymes = set()
+
+        # Generate first triplet
+        lines[0] = self.generate_stress_line(cadence)
+
+        while self.rhyme(lines[0][-1], min_rhymes=2) is None:
+            lines[0] = self.generate_stress_line(cadence)
+
+        restricted_rhymes.update([lines[0][-1]])
+
+        doublet = self.generate_multi_line(cadence, lines[0][-1], 2)
+
+        lines[1] = doublet[0]
+        lines[3] = doublet[1]
+
+        # Generate the intermediate line
+        lines[2] = self.generate_stress_line(cadence)
+
+        return lines
+
+    def compose_villanelle(self):
+        '''
+        Composes a villanelle with matching cadence,
+        and a rhyme scheme of 
+        A1 b A2 / a b A1 / a b A2
+        a b A1 / a b A2 / a b A1 A2
+        '''
+
+        lines = [None] * 19
+
+        # Generate first line 
+        lines[0] = self.generate_line(8)
+
+        # Need valid rhymes
+        while self.rhyme(lines[0][-1], min_rhymes=6) is None:
+            lines[0] = self.generate_line(8)
+
+        primary_cad = self.cadence(' '.join(lines[0]))
+
+        sextet = self.generate_multi_line(primary_cad, lines[0][-1], 6)
+
+        # Generate secondary lines
+        lines[1] = self.generate_line(8)
+
+        # Need valid rhymes
+        while self.rhyme(lines[1][-1], min_rhymes=5) is None:
+            lines[1] = self.generate_line(8)
+
+        secondary_cad = self.cadence(' '.join(lines[1]))
+
+        quintet = self.generate_multi_line(secondary_cad, lines[1][-1], 5)
+
+        # Compose the villanelle
+        # Hard coded because there is not a recognizable pattern here
+        lines[2] = sextet[0]
+        lines[3] = sextet[1]
+        lines[4] = quintet[0]
+        lines[5] = lines[0]
+        lines[6] = sextet[2]
+        lines[7] = quintet[1]
+        lines[8] = sextet[0]
+        lines[9] = sextet[3]
+        lines[10] = quintet[2]
+        lines[11] = lines[0]
+        lines[12] = sextet[4]
+        lines[13] = quintet[3]
+        lines[14] = sextet[0]
+        lines[15] = sextet[5]
+        lines[16] = quintet[4]
+        lines[17] = lines[0]
+        lines[18] = sextet[0]
+
+        return lines
+
+    def compose_ballade(self):
+        '''
+        Composes a ballade, a long-form poem, but truncated to
+        one stanza and one envoy. The rhyme scheme is 
+        ababbcbC / bcbC, where C is the refrain.
+        '''
+
+        a_rhymes = [None] * 2
+
+        # Create a line with a rhyme-able word
+        a_rhymes[0] = self.generate_line(8)
+
+        while self.rhyme(a_rhymes[0][-1]) is None:
+            a_rhymes[0] = self.generate_line(8)
+
+        a_cadence = self.cadence(' '.join(a_rhymes[0]))
+
+        a_rhymes[1] = self.generate_matching_line(a_cadence, a_rhymes[0][-1])
+
+        while a_rhymes[1] is None:
+             a_rhymes[1] = self.generate_matching_line(a_cadence, a_rhymes[0][-1])
+
+        b_rhymes = [None] * 6
+
+        b_rhymes[0] = self.generate_line(8)
+
+        # b needs 6 total lines, so 5 rhymes total
+        while self.rhyme(b_rhymes[0][-1], min_rhymes=5) is None:
+            b_rhymes[0] = self.generate_line(8)
+
+        b_cadence = self.cadence(' '.join(b_rhymes[0]))
+
+        b_rhymes[1:] = self.generate_multi_line(b_cadence, b_rhymes[0][-1], 5)
+
+        c_rhymes = [None] * 2
+
+        c_rhymes[0] = self.generate_line(8)
+
+        while self.rhyme(c_rhymes[0][-1], min_rhymes=2) is None:
+            c_rhymes[0] = self.generate_line(8)
+
+        c_cadence = self.cadence(' '.join(c_rhymes[0]))
+
+        c_rhymes[1:] = self.generate_multi_line(c_cadence, c_rhymes[0][-1], 2)
+
+        while None in c_rhymes:
+            c_rhymes[1:] = self.generate_multi_line(c_cadence, c_rhymes[0][-1], 2)
+
+        poem = [None] * 12
+
+        poem[0] = a_rhymes[0]
+        poem[1] = b_rhymes[0]
+        poem[2] = a_rhymes[1]
+        poem[3] = b_rhymes[1]
+        poem[4] = b_rhymes[2]
+        poem[5] = c_rhymes[0]
+        poem[6] = b_rhymes[3]
+        poem[7] = c_rhymes[1]
+        poem[8] = b_rhymes[4]
+        poem[9] = c_rhymes[2]
+        poem[10] = b_rhymes[5]
+        poem[11] = c_rhymes[1]
+
+        return poem
