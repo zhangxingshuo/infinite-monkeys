@@ -5,7 +5,7 @@ Extensible class for generating prose and and poetry
 using the Natural Language Toolkit and the Carnegie 
 Mellon Pronunciation Dictionary
 
-"Given an infinite number monkeys at an infinite number of
+"Given an infinite number of monkeys at an infinite number of
 typewriters working for an infinite amount of time, one will
 eventually produce a work worthy of Shakespeare"
                                     -- A popular saying
@@ -176,7 +176,22 @@ class Poet(object):
 
         end = time.time()
 
-        final_poem = self.format_poem(sonnet, title='A Nonsense Sonnet')
+        title = self.generate_title(sonnet)
+
+        final_poem = '\n"' + title + '"' + '\nA Nonsense Sonnet\nBy Poetry Bot\n\n'
+
+        # Add the first 12 lines
+        for i in range(12):
+            string_to_add = ' '.join(sonnet[i])
+            final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+
+        # Add the final two lines
+        for i in range(12, 14):
+            string_to_add = ' '.join(sonnet[i])
+
+            # Italicize last two lines (may not work in some consoles)
+            final_poem += '    ' + '\x1B[3m' + string_to_add[0].upper() + string_to_add[1:] + '\x1B[23m\n'
+
         print(final_poem)
         print('Composed in %0.2f seconds' % (end-start))
 
@@ -251,7 +266,9 @@ class Poet(object):
 
         end = time.time()
 
-        final_poem = '\nA Nonsense Ballade\nBy Poetry Bot\n\n'
+        title = self.generate_title(ballade)
+
+        final_poem = '\n"' + title + '"' + '\nA Nonsense Ballade\nBy Poetry Bot\n\n'
 
         # Add first stanza
         for i in range(8):
