@@ -47,7 +47,9 @@ Usage:
 
 '''
 
-import pickle
+# import pickle
+import nltk
+from nltk.corpus import cmudict
 import re
 import random
 import time
@@ -57,10 +59,12 @@ class Poet(object):
     def __init__(self, full=False):
 
         # Import the CMU dictionary of pronunciation and stress
-        self.dict = pickle.load( open('cmudict.p', 'rb') )
+        # self.dict = pickle.load( open('cmudict.p', 'rb') )
+        self.dict = cmudict.dict()
 
         # Get the separated entries of the CMU dictionary
-        self.entries = pickle.load( open('entries.p', 'rb') )
+        # self.entries = pickle.load( open('entries.p', 'rb') )
+        self.dict = cmudict.entries()
 
         if full:
             # Get all the words in the CMU dictionary
