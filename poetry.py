@@ -64,7 +64,7 @@ class Poet(object):
 
         # Get the separated entries of the CMU dictionary
         # self.entries = pickle.load( open('entries.p', 'rb') )
-        self.dict = cmudict.entries()
+        self.entries = cmudict.entries()
 
         if full:
             # Get all the words in the CMU dictionary
