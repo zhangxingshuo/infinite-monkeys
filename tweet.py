@@ -20,16 +20,33 @@ def tweet():
 
     api = tweepy.API(auth)
 
+    tweet = make_short_limerick()
+
+    api.update_status(tweet)
+
+def make_short_limerick():
     poet = Poet()
 
     limerick = poet.compose_limerick()
 
-    tweet = ''
-    for raw_line in limerick:
+    final = ''
+    for raw_line in limerick[:-1]:
         line = ' '.join(raw_line)
-        tweet += line[0].upper() + line[1:] + '\n'
+        final += line[0].upper() + line[1:] + '\n'
+    line = ' '.join(limerick[-1])
+    final += line[0].upper() + line[1:] + '\n'
 
-    api.update_status(tweet)
+    while len(final) > 140:
+        limerick = poet.compose_limerick()
+
+        final = ''
+        for raw_line in limerick[:-1]:
+            line = ' '.join(raw_line)
+            final += line[0].upper() + line[1:] + '\n'
+        line = ' '.join(limerick[-1])
+        final += line[0].upper() + line[1:]
+
+    return final
 
 if __name__ == '__main__':
     tweet()
