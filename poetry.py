@@ -47,42 +47,38 @@ Usage:
 
 '''
 
-# import pickle
+import pickle
 import nltk
 from nltk.corpus import cmudict
+
 import re
 import random
 import time
 
+import os
+
+# Get the current working directory
+path = os.getcwd()
+
 class Poet(object):
 
-    def __init__(self, full=False):
+    def __init__(self, filename):
+
+        self.filename = path + '/' + filename
 
         # Import the CMU dictionary of pronunciation and stress
-        # self.dict = pickle.load( open('cmudict.p', 'rb') )
-        self.dict = cmudict.dict()
+        self.dict = pickle.load( open(path + '/data/cmudict.pkl', 'rb') ) 
 
-        # Get the separated entries of the CMU dictionary
-        # self.entries = pickle.load( open('entries.p', 'rb') )
-        self.entries = cmudict.entries()
+        # Load the word list from the input corpus
+        self.word_list = self.load(filename)
 
-        if full:
-            # Get all the words in the CMU dictionary
-            self.word_list = [word.lower() for (word,_) in self.entries]
-
-        else:
-            # Get the 10,000 most common words from Google
-            file = open('english.txt')
-            raw_list = file.read().split('\n')[:-1]
-
-            # Sanitize and check word is in dictionary
-            # Google includes possessive versions of the 
-            # same word, along with some non-words
-            self.word_list = []
-            for word in raw_list:
-                clean_word = self.sanitize(word)
-                if clean_word in self.dict:
-                    self.word_list += [clean_word]
+        # Try to find the rhyming dictionary file
+        # If it does not exist, default to the 10,000 most common words from Google
+        try:
+            self.rhyme_dict = pickle.load( open(os.path.splitext(self.filename)[0] + '.pkl', 'rb') )
+        except:
+            print('Rhyming dictionary not found. Using default English rhyming.')
+            self.rhyme_dict = pickle.load( open(path + '/data/english.pkl', 'rb') )
 
 
     ##############
@@ -371,20 +367,20 @@ class Poet(object):
 
     def load(self, filename):
         '''
-        Overwrites the 10,000 most common English words with a new
-        set of words generated from a corpus of text
+        Load in a corpus of text and extract all unique occurrences
+        of words that are in the CMU dictionary
         '''
 
-        new_word_list = set()
+        word_list = set()
 
         file = open(filename)
         raw_text = file.read().split()
         for word in raw_text:
             clean_word = self.sanitize(word)
             if clean_word in self.dict:
-                new_word_list.update([clean_word])
+                word_list.update([clean_word])
 
-        self.word_list = list(new_word_list)
+        return list(word_list)
 
     ###############
     ### Cadence ###
@@ -402,19 +398,20 @@ class Poet(object):
             raise KeyError('Word not found in CMU dictionary', word)
 
         else:
-            # Get the primary pronunciation from CMU dictionary
-            pronunciation = self.dict[word.lower()][0]
+            # # Get the primary pronunciation from CMU dictionary
+            # pronunciation = self.dict[word.lower()][0]
 
-            syllables = ''
-            for elem in pronunciation:
-                if elem[-1] == '0' or elem[-1] == '1' or elem[-1] == '2':
-                    syllables += elem[-1]
+            # syllables = ''
+            # for elem in pronunciation:
+            #     if elem[-1] == '0' or elem[-1] == '1' or elem[-1] == '2':
+            #         syllables += elem[-1]
 
-            # One syllable words are neither stressed nor unstressed
-            if len(syllables) == 1:
-                return '*'
-            else:
-                return syllables
+            # # One syllable words are neither stressed nor unstressed
+            # if len(syllables) == 1:
+            #     return '*'
+            # else:
+            #     return syllables
+            return self.dict[word.lower()]
 
     def nsyl(self, word):
         '''
@@ -479,35 +476,43 @@ class Poet(object):
     ### Rhyming ###
     ###############
 
-    def rhyme_set(self, input_word, level, restricted=set()):
-        '''
-        Returns set of all words that rhyme with the input word at given level,
-        i.e. the number of element matches in the pronunciation
+    # def rhyme_set(self, input_word, level, restricted=set()):
+    #     '''
+    #     Returns set of all words that rhyme with the input word at given level,
+    #     i.e. the number of element matches in the pronunciation
 
-        Note that this pools from the CMU dictionary, to widen the range of rhymes,
-        rather than from the 10,000 most common words. Expect to get some weird
-        words.
+    #     Note that this pools from the CMU dictionary, to widen the range of rhymes,
+    #     rather than from the 10,000 most common words. Expect to get some weird
+    #     words.
 
-        Supports restricting restricting the rhyme set to eliminate repeat rhymes.
-        '''
+    #     Supports restricting restricting the rhyme set to eliminate repeat rhymes.
+    #     '''
 
-        # Get the pronunciation of the word
-        syllables = [(word, syl) for word, syl in self.entries if word == input_word]
+    #     # Get the pronunciation of the word
+    #     syllables = [(word, syl) for word, syl in self.entries if word == input_word]
 
-        # Find the matching pronunciations, i.e. rhymes, of word
-        rhymes = []
-        for (word, syllable) in syllables:
-            rhymes += [word for word, pron in self.entries if pron[-level:] == syllable[-level:]]
+    #     # Find the matching pronunciations, i.e. rhymes, of word
+    #     rhymes = []
+    #     for (word, syllable) in syllables:
+    #         rhymes += [word for word, pron in self.entries if pron[-level:] == syllable[-level:]]
 
-        # Remove the rhymes from restricted set
-        rhyming_set = set(rhymes)
+    #     # Remove the rhymes from restricted set
+    #     rhyming_set = set(rhymes)
 
-        # The input does not rhyme with itself
-        rhyming_set.remove(input_word)
+    #     # The input does not rhyme with itself
+    #     rhyming_set.remove(input_word)
 
-        # Remove elements from restricted set
+    #     # Remove elements from restricted set
+    #     rhyming_set.difference_update(restricted)
+
+    #     return rhyming_set
+
+    def rhyme_set(self, input_word, restricted=set()):
+        if input_word not in self.rhyme_dict:
+            return None
+
+        rhyming_set = self.rhyme_dict[input_word]
         rhyming_set.difference_update(restricted)
-
         return rhyming_set
 
     def rhyme(self, input_word, min_rhymes=1, restricted=set()):
@@ -515,25 +520,39 @@ class Poet(object):
         Given word, returns random rhyming word, or None if none exists
         '''
 
-        # Check if input word is in the dictionary
-        if input_word.lower() in self.dict:
-            num_elements = len(self.dict[input_word.lower()][0])
-        else:
+        # # Check if input word is in the dictionary
+        # if input_word.lower() in self.dict:
+        #     num_elements = len(self.dict[input_word.lower()][0])
+        # else:
+        #     return None
+
+        # # Shorter words need higher rhyme levels to sound right
+        # if num_elements < 4:
+        #     rhyme_level = num_elements
+        # else:
+        #     rhyme_level = num_elements - 1
+
+
+        # rhymes = self.rhyme_set(input_word, rhyme_level, restricted)
+
+        # # Check if we have enough rhymes
+        # if len(rhymes) < min_rhymes:
+        #     return None
+
+        # # Randomly get a word from rhyme set
+        # return random.sample(rhymes, 1)[0]
+
+        if input_word.lower() not in self.dict:
             return None
 
-        # Shorter words need higher rhyme levels to sound right
-        if num_elements < 4:
-            rhyme_level = num_elements
-        else:
-            rhyme_level = num_elements - 1
+        rhymes = self.rhyme_set(input_word, restricted)
 
-        rhymes = self.rhyme_set(input_word, rhyme_level, restricted)
+        if rhymes is None:
+            return None
 
-        # Check if we have enough rhymes
         if len(rhymes) < min_rhymes:
             return None
 
-        # Randomly get a word from rhyme set
         return random.sample(rhymes, 1)[0]
 
 
@@ -714,15 +733,19 @@ class Poet(object):
         poem = [None] * 4
 
         poem[0] = ['Roses', 'are', 'red']
-        poem[1] = ['Violets', 'are', 'blue']
+        poem[1] = ['Violets', 'are']
 
-        cadence = self.cadence(' '.join(poem[0]))
+        rhyme_word = random.choice(list(self.rhyme_dict.keys()))
+        poem[1] += [rhyme_word]
 
-        poem[2] = self.generate_stress_line(cadence)
+        primary_cad = self.cadence(' '.join(poem[0]))
 
-        # Generate rhyme with 'who' because it gives more rhymes than 'blue'
-        poem[3] = self.generate_matching_line(cadence, 'who', 
-            restricted=set(['blue']))
+        poem[2] = self.generate_stress_line(primary_cad)
+
+        secondary_cad = '1**' + self.stress(rhyme_word)
+
+        poem[3] = self.generate_matching_line(secondary_cad, rhyme_word, 
+            restricted=set([rhyme_word]))
 
         return poem
 
