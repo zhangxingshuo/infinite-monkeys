@@ -14,7 +14,10 @@ import random
 from keys import *
 from poetry import Poet
 
-poet = Poet()
+import os
+path = os.getcwd()
+
+poet = Poet(path + '/data/english')
 
 def make_short_limerick():
     limerick = poet.compose_limerick()
@@ -43,7 +46,7 @@ def make_short_haiku():
 def make_short_love_poem():
     love_poem = poet.compose_love_poem()
 
-    final_love_poem = make_poem(haiku)
+    final_love_poem = make_poem(love_poem)
 
     while len(final_love_poem) > 140:
         love_poem = poet.compose_love_poem()
