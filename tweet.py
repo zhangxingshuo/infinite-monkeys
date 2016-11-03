@@ -17,7 +17,7 @@ from poetry import Poet
 import os
 path = os.getcwd()
 
-poet = Poet(path + '/data/english')
+poet = Poet(path + '/data/english.txt')
 
 def make_short_limerick():
     limerick = poet.compose_limerick()
