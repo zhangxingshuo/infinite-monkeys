@@ -61,6 +61,9 @@ def make_short_love_poem():
 def make_short_doublet():
     doublet = poet.compose_doublet()
 
+    while None in doublet:
+        doublet = poet.compose_doublet()
+
     final_doublet = make_poem(doublet)
 
     while len(final_doublet) > 140:
@@ -109,7 +112,7 @@ def tweet():
 
     tweet = random_poem()
 
-    api.update_status(tweet)
+    # api.update_status(tweet)
 
 if __name__ == '__main__':
     tweet()

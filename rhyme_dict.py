@@ -81,23 +81,23 @@ class rhymer(object):
         '''
         Returns set of all words that rhyme with the input word at given level,
         i.e. the number of element matches in the pronunciation
-        
-        Supports restricting restricting the rhyme set to eliminate repeat rhymes.
         '''
 
         # Get the pronunciation of the word
-        syllable = self.dict[input_word][0]
+        syllables = self.dict[input_word]
+
+        total_rhymes = set()
 
         # Find all matching pronunciations, i.e. rhymes, of word
-        rhymes = [word for word in self.word_list if self.dict[word][0][-level:] == syllable[-level:]]
-
-        # Remove the rhymes from restricted set
-        rhyming_set = set(rhymes)
+        for syllable in syllables:
+            rhymes = [word for word in self.word_list if self.dict[word][0][-level:] == syllable[-level:]]
+            rhyming_set = set(rhymes)
+            total_rhymes.update(rhyming_set)
 
         # The input does not rhyme with itself
-        rhyming_set.remove(input_word)
+        total_rhymes.remove(input_word)
 
-        return rhyming_set
+        return total_rhymes
 
     def write(self):
         '''

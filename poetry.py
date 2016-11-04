@@ -29,7 +29,7 @@ Usage:
     Offense guardian save bring
     Thank validation
 
-    Composed in 0.01 seconds
+    Composed in 0.01 seconds    
 
 
     Different forms of poetry have different runtimes, depending
