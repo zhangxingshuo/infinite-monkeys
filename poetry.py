@@ -48,23 +48,24 @@ Usage:
 '''
 
 import pickle
-import nltk
-from nltk.corpus import cmudict
+# import nltk
+# from nltk.corpus import cmudict
 
 import re
 import random
 import time
 
 import os
+import sys
 
-# Get the current working directory
-path = os.getcwd()
+# Get the py-verse directory
+path = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 class Poet(object):
 
     def __init__(self, filename):
 
-        self.filename = path + '/' + filename
+        self.filename = filename
 
         # Import the CMU dictionary of pronunciation and stress
         self.dict = pickle.load( open(path + '/data/cmudict.pkl', 'rb') ) 

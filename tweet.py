@@ -15,7 +15,10 @@ from keys import *
 from poetry import Poet
 
 import os
-path = os.getcwd()
+import sys
+
+# Get py-verse directory
+path = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 poet = Poet(path + '/data/english.txt')
 
