@@ -115,8 +115,7 @@ def tweet():
 
     tweet = random_poem()
 
-    # api.update_status(tweet)
-    print(tweet)
-
+    api.update_status(tweet)
+    
 if __name__ == '__main__':
     tweet()
