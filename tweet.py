@@ -49,6 +49,9 @@ def make_short_haiku():
 def make_short_love_poem():
     love_poem = poet.compose_love_poem()
 
+    while None in love_poem:
+        love_poem = poet.compose_love_poem()
+
     final_love_poem = make_poem(love_poem)
 
     while len(final_love_poem) > 140:
@@ -112,7 +115,8 @@ def tweet():
 
     tweet = random_poem()
 
-    api.update_status(tweet)
+    # api.update_status(tweet)
+    print(tweet)
 
 if __name__ == '__main__':
     tweet()
