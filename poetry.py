@@ -33,8 +33,6 @@ Usage:
 '''
 
 import pickle
-# import nltk
-# from nltk.corpus import cmudict
 
 import re
 import random
@@ -384,7 +382,21 @@ class Poet(object):
             raise KeyError('Word not found in CMU dictionary', word)
 
         else:
-            return self.dict[word.lower()]
+            return self.dict[word.lower()][0]
+
+    def complexity(self, word):
+        '''
+        Returns the complexity of the input word.
+        Complexity is defined as the average phoneme length across all pronunciations
+        divided by the number of syllables in the word.
+        '''
+
+        # Check if word in dictionary
+        if word.lower() not in self.dict:
+            raise KeyError('Word not found in CMU dictionary', word)
+
+        else:
+            return self.dict[word.lower()][1]
 
     def nsyl(self, word):
         '''
@@ -454,11 +466,16 @@ class Poet(object):
         Returns the set of all words that rhyme with the 
         input word, encompassing all possible pronunciations
         '''
+
         if input_word not in self.rhyme_dict:
             return None
 
+        # Get the rhymes from the pre-compiled dictionary
         rhyming_set = self.rhyme_dict[input_word]
+
+        # Remove the restricted set
         rhyming_set.difference_update(restricted)
+
         return rhyming_set
 
     def rhyme(self, input_word, min_rhymes=1, restricted=set()):
@@ -497,8 +514,8 @@ class Poet(object):
         else:
             word = random.choice(self.word_list)
 
-            # Randomly get a word of the correct length
-            while self.nsyl(word) > num_syl or self.nsyl(word) == 0:
+            # Randomly get a word of the correct length and low phoneme complexity
+            while self.nsyl(word) > num_syl or self.complexity(word) > 3:
                 word = random.choice(self.word_list)
 
             return [word] + self.generate_line(num_syl - self.nsyl(word))
@@ -535,9 +552,15 @@ class Poet(object):
             tries = 0
             while not self.cadence_match(self.stress(word), pattern_copy):
                 word = random.choice(self.word_list)
+
+                # Words with too many phonemes do not flow well
+                while self.complexity(word) > 3:
+                    word = random.choice(self.word_list)
+
                 tries += 1
 
                 # Stop if number of attempts is exceeded
+                # This implies that the cadence is impossible to match
                 if tries > num_tries:
                     return [None]
 
@@ -628,9 +651,6 @@ class Poet(object):
             restricted_rhymes.update([line_to_add[-1]])
 
             lines.append(line_to_add)
-            
-            # Comment out if need to see progress of multi-line generation
-            # print(line)
 
         return lines
 
@@ -789,6 +809,10 @@ class Poet(object):
             second_line = self.generate_matching_line(cadence, first_line[-1],
                 restricted=restricted_rhymes)
 
+            while second_line is None:
+                second_line = self.generate_matching_line(cadence, first_line[-1],
+                restricted=restricted_rhymes)
+
             restricted_rhymes.update([second_line[-1]])
 
             doublets += [[first_line, second_line]]
@@ -878,18 +902,23 @@ class Poet(object):
         # Compose the villanelle
         # Hard coded because there is not a recognizable pattern here
         lines[2] = sextet[0]
+
         lines[3] = sextet[1]
         lines[4] = quintet[0]
         lines[5] = lines[0]
+
         lines[6] = sextet[2]
         lines[7] = quintet[1]
         lines[8] = sextet[0]
+
         lines[9] = sextet[3]
         lines[10] = quintet[2]
         lines[11] = lines[0]
+
         lines[12] = sextet[4]
         lines[13] = quintet[3]
         lines[14] = sextet[0]
+
         lines[15] = sextet[5]
         lines[16] = quintet[4]
         lines[17] = lines[0]
@@ -955,6 +984,7 @@ class Poet(object):
         poem[5] = c_rhymes[0]
         poem[6] = b_rhymes[3]
         poem[7] = c_rhymes[1]
+
         poem[8] = b_rhymes[4]
         poem[9] = c_rhymes[2]
         poem[10] = b_rhymes[5]

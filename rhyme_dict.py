@@ -90,12 +90,17 @@ class rhymer(object):
 
         # Find all matching pronunciations, i.e. rhymes, of word
         for syllable in syllables:
-            rhymes = [word for word in self.word_list if self.dict[word][0][-level:] == syllable[-level:]]
+            rhymes = []
+            for word in self.word_list:
+                for pron in self.dict[word]:
+                    if pron[-level:] == syllable[-level:] and pron != syllable:
+                        rhymes += [word]
+            # rhymes = [word for word in self.word_list if self.dict[word][0][-level:] == syllable[-level:]]
             rhyming_set = set(rhymes)
             total_rhymes.update(rhyming_set)
 
         # The input does not rhyme with itself
-        total_rhymes.remove(input_word)
+        # total_rhymes.remove(input_word)
 
         return total_rhymes
 

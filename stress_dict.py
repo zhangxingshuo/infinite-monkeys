@@ -48,6 +48,21 @@ class cmudict_parser(object):
             else:
                 return syllables
 
+    def complexity(self, word):
+        '''
+        Returns average complexity of all pronunciations of a word
+        '''
+        if word not in self.dict:
+            raise KeyError('Word not found in CMU dictionary', word)
+        prons = self.dict[word]
+        lengths = []
+        for pron in prons:
+            lengths += [len(pron)]
+        try:
+            return  (sum(lengths) / len(lengths)) / len(self.stress(word))
+        except:
+            return 100.0
+
     def write(self):
         '''
         Write to a dictionary containing the words as keys and stresses
@@ -56,7 +71,7 @@ class cmudict_parser(object):
         ret_dict = {}
         for word in self.dict:
             stress = self.stress(word)
-            ret_dict[word] = stress
+            ret_dict[word] = (stress, self.complexity(word))
 
         pickle.dump( ret_dict, open('cmudict.pkl', 'wb') )
 
