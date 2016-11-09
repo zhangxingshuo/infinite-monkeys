@@ -30,21 +30,6 @@ Usage:
     Thank validation
 
     Composed in 0.01 seconds    
-
-
-    Different forms of poetry have different runtimes, depending
-    on their complexity. The average runtime for 10 trials is
-
-               | Average | Maximum | Minimum |
-    Love Poem  |  0.83s  |  0.84s  |  0.83s  |
-    Haiku      |  0.00s  |  0.00s  |  0.00s  |
-    Doublet    |  4.33s  |  7.56s  |  1.69s  |
-    Limerick   |  5.08s  |  8.16s  |  4.17s  |
-    Sonnet     | 20.51s  | 26.87s  | 12.54s  | 
-    Quatrain   |  5.75s  | 10.36s  |  4.08s  |
-    Villanelle | 30.15s  | 59.61s  | 13.33s  |
-    Ballade    |         |         |         |
-
 '''
 
 import pickle
@@ -399,19 +384,6 @@ class Poet(object):
             raise KeyError('Word not found in CMU dictionary', word)
 
         else:
-            # # Get the primary pronunciation from CMU dictionary
-            # pronunciation = self.dict[word.lower()][0]
-
-            # syllables = ''
-            # for elem in pronunciation:
-            #     if elem[-1] == '0' or elem[-1] == '1' or elem[-1] == '2':
-            #         syllables += elem[-1]
-
-            # # One syllable words are neither stressed nor unstressed
-            # if len(syllables) == 1:
-            #     return '*'
-            # else:
-            #     return syllables
             return self.dict[word.lower()]
 
     def nsyl(self, word):
@@ -477,38 +449,11 @@ class Poet(object):
     ### Rhyming ###
     ###############
 
-    # def rhyme_set(self, input_word, level, restricted=set()):
-    #     '''
-    #     Returns set of all words that rhyme with the input word at given level,
-    #     i.e. the number of element matches in the pronunciation
-
-    #     Note that this pools from the CMU dictionary, to widen the range of rhymes,
-    #     rather than from the 10,000 most common words. Expect to get some weird
-    #     words.
-
-    #     Supports restricting restricting the rhyme set to eliminate repeat rhymes.
-    #     '''
-
-    #     # Get the pronunciation of the word
-    #     syllables = [(word, syl) for word, syl in self.entries if word == input_word]
-
-    #     # Find the matching pronunciations, i.e. rhymes, of word
-    #     rhymes = []
-    #     for (word, syllable) in syllables:
-    #         rhymes += [word for word, pron in self.entries if pron[-level:] == syllable[-level:]]
-
-    #     # Remove the rhymes from restricted set
-    #     rhyming_set = set(rhymes)
-
-    #     # The input does not rhyme with itself
-    #     rhyming_set.remove(input_word)
-
-    #     # Remove elements from restricted set
-    #     rhyming_set.difference_update(restricted)
-
-    #     return rhyming_set
-
     def rhyme_set(self, input_word, restricted=set()):
+        '''
+        Returns the set of all words that rhyme with the 
+        input word, encompassing all possible pronunciations
+        '''
         if input_word not in self.rhyme_dict:
             return None
 
@@ -520,28 +465,6 @@ class Poet(object):
         '''
         Given word, returns random rhyming word, or None if none exists
         '''
-
-        # # Check if input word is in the dictionary
-        # if input_word.lower() in self.dict:
-        #     num_elements = len(self.dict[input_word.lower()][0])
-        # else:
-        #     return None
-
-        # # Shorter words need higher rhyme levels to sound right
-        # if num_elements < 4:
-        #     rhyme_level = num_elements
-        # else:
-        #     rhyme_level = num_elements - 1
-
-
-        # rhymes = self.rhyme_set(input_word, rhyme_level, restricted)
-
-        # # Check if we have enough rhymes
-        # if len(rhymes) < min_rhymes:
-        #     return None
-
-        # # Randomly get a word from rhyme set
-        # return random.sample(rhymes, 1)[0]
 
         if input_word.lower() not in self.dict:
             return None
