@@ -50,17 +50,27 @@ class cmudict_parser(object):
 
     def complexity(self, word):
         '''
-        Returns average complexity of all pronunciations of a word
+        Returns average complexity of all pronunciations of a word.
+        Complexity is defined as the average number of phonemes across all
+        pronunciations per syllable. 
         '''
         if word not in self.dict:
             raise KeyError('Word not found in CMU dictionary', word)
+
+        phonemes = ['B','CH','D','DH','F','G','HH','JH','K','L','M','N','NG','P','R','S','SH','T','TH','V','W','Z','ZH']
+
         prons = self.dict[word]
         lengths = []
         for pron in prons:
-            lengths += [len(pron)]
+            length = len(pron)
+            if pron[-1] in phonemes:
+                length += 2
+            lengths += [length]
         try:
+            # average number of phonemes per syllable
             return  (sum(lengths) / len(lengths)) / len(self.stress(word))
         except:
+            # Division by zero error, return an arbitrary large number
             return 100.0
 
     def write(self):

@@ -8,7 +8,7 @@ Mellon Pronunciation Dictionary
 "Given an infinite number of monkeys at an infinite number of
 typewriters working for an infinite amount of time, one will
 eventually produce a work worthy of Shakespeare"
-                                    -- A popular saying
+                                --The Infinite Monkey Theorem
 
 Usage:
 ------
@@ -46,7 +46,7 @@ path = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 class Poet(object):
 
-    def __init__(self, filename):
+    def __init__(self, filename=None):
 
         self.filename = filename
 
@@ -54,20 +54,36 @@ class Poet(object):
         self.dict = pickle.load( open(path + '/data/cmudict.pkl', 'rb') ) 
 
         # Load the word list from the input corpus
-        self.word_list = self.load(filename)
+        if not filename:
+            self.word_list = self.load(path + '/data/english.txt')
+        else:
+            self.word_list = self.load(filename)
 
         # Try to find the rhyming dictionary file
         # If it does not exist, default to the 10,000 most common words from Google
         try:
             self.rhyme_dict = pickle.load( open(os.path.splitext(self.filename)[0] + '.pkl', 'rb') )
         except:
-            print('Rhyming dictionary not found. Using default English rhyming.')
+            # print('Rhyming dictionary not found. Using default English rhyming.')
             self.rhyme_dict = pickle.load( open(path + '/data/english.pkl', 'rb') )
 
 
     ##############
     ### Poetry ###
     ##############
+
+    def compose_random_poem(self):
+        '''
+        Composes a random poem from the available forms of poetry.
+        '''
+        
+        poetry_methods = [self.string_love_poem, self.string_haiku, self.string_doublet, 
+        self.string_limerick, self.string_sonnet, self.string_quatrain, 
+        self.string_villanelle, self.string_ballade]
+
+        random_poem = random.choice(poetry_methods)
+
+        return random_poem()
 
     def print_love_poem(self):
         '''
@@ -76,17 +92,22 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_love_poem()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_love_poem(self):
         love_poem = self.compose_love_poem()
 
         # Keep generating until there is valid line
         while love_poem[-1] is None:
             love_poem = self.compose_love_poem()
 
-        end = time.time()
-
         final_poem = self.format_poem(love_poem, title='A Nonsense Love Poem')
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_haiku(self):
         '''
@@ -95,13 +116,18 @@ class Poet(object):
 
         start = time.time()
 
-        haiku = self.compose_haiku()
+        final_poem = self.string_haiku()
 
         end = time.time()
 
-        final_poem = self.format_poem(haiku, title='A Nonsense Haiku')
         print(final_poem)
         print('Composed in %0.2f seconds' % (end-start))
+
+    def string_haiku(self):
+        haiku = self.compose_haiku()
+
+        final_poem = self.format_poem(haiku, title='A Nonsense Haiku')
+        return final_poem
 
     def print_doublet(self):
         '''
@@ -110,17 +136,22 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_doublet()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_doublet(self):
         doublet = self.compose_doublet()
 
         # Keep looking for valid doublets
         while doublet[-1] is None:
             doublet = self.compose_doublet()
 
-        end = time.time()
-
         final_poem = self.format_poem(doublet, title='A Nonsense Doublet')
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_limerick(self):
         '''
@@ -132,16 +163,21 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_limerick()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_limerick(self):
         limerick = self.compose_limerick()
 
         while None in limerick:
             limerick = self.compose_limerick()
 
-        end = time.time()
-
         final_poem = self.format_poem(limerick, title='A Nonsense Limerick')
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_sonnet(self):
         '''
@@ -153,12 +189,18 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_sonnet()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_sonnet(self):
         sonnet = self.compose_sonnet()
 
         while None in sonnet:
             sonnet = self.compose_sonnet()
-
-        end = time.time()
 
         title = self.generate_title(sonnet)
 
@@ -168,16 +210,18 @@ class Poet(object):
         for i in range(12):
             string_to_add = ' '.join(sonnet[i])
             final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
+            if (i+1) % 4 == 0:
+                final_poem += '\n'
 
         # Add the final two lines
         for i in range(12, 14):
             string_to_add = ' '.join(sonnet[i])
 
             # Italicize last two lines (may not work in some consoles)
-            final_poem += '    ' + '\x1B[3m' + string_to_add[0].upper() + string_to_add[1:] + '\x1B[23m\n'
+            # final_poem += '    ' + '\x1B[3m' + string_to_add[0].upper() + string_to_add[1:] + '\x1B[23m\n'
+            final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
 
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_quatrain(self):
         '''
@@ -186,16 +230,21 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_quatrain()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_quatrain(self):
         quatrain = self.compose_quatrain()
 
         while None in quatrain:
             quatrain = self.compose_quatrain()
 
-        end = time.time()
-
         final_poem = self.format_poem(quatrain, title='A Nonsense Quatrain')
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_villanelle(self):
         '''
@@ -207,6 +256,14 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_villanelle()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_villanelle(self):
         villanelle = self.compose_villanelle()
 
         while None in villanelle:
@@ -230,8 +287,7 @@ class Poet(object):
             string_to_add = ' '.join(villanelle[k])
             final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
 
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
     def print_ballade(self):
         '''
@@ -243,12 +299,18 @@ class Poet(object):
 
         start = time.time()
 
+        final_poem = self.string_ballade()
+
+        end = time.time()
+
+        print(final_poem)
+        print('Composed in %0.2f seconds' % (end-start))
+
+    def string_ballade(self):
         ballade = self.compose_ballade()
 
         while None in ballade:
             ballade = self.compose_ballade()
-
-        end = time.time()
 
         title = self.generate_title(ballade)
 
@@ -266,8 +328,7 @@ class Poet(object):
             string_to_add = ' '.join(ballade[j])
             final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
 
-        print(final_poem)
-        print('Composed in %0.2f seconds' % (end-start))
+        return final_poem
 
 
     #########################
@@ -664,7 +725,7 @@ class Poet(object):
         Generates a love poem, with the first two lines being 
         
         Roses are red,
-        Violets are blue
+        Violets are...
         ...
         ...
 
@@ -804,16 +865,10 @@ class Poet(object):
             while self.rhyme(first_line[-1]) is None:
                 first_line = self.generate_stress_line(cadence)
 
-            restricted_rhymes.update([first_line[-1]])
-
-            second_line = self.generate_matching_line(cadence, first_line[-1],
-                restricted=restricted_rhymes)
+            second_line = self.generate_matching_line(cadence, first_line[-1])
 
             while second_line is None:
-                second_line = self.generate_matching_line(cadence, first_line[-1],
-                restricted=restricted_rhymes)
-
-            restricted_rhymes.update([second_line[-1]])
+                second_line = self.generate_matching_line(cadence, first_line[-1])
 
             doublets += [[first_line, second_line]]
 
