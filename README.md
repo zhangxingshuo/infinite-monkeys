@@ -3,7 +3,7 @@ Poetry generation using the Natural Language Toolkit and CMU Pronouncing Diction
 
 "Given an infinite number of monkeys at an infinite number of typewriters working for an infinite amount of time, one will eventually produce a work worthy of Shakespeare"
 
-Currently generating nonsense poetry on Twitter under Infinite Typewriters [(@infinite_poetry)](https://twitter.com/infinite_poetry).
+Currently generating nonsense poetry on Twitter under Infinite Typewriters [(@infinite_poetry)](https://twitter.com/infinite_poetry) and on Facebook at [Infinite Typewriters](https://facebook.com/infinitetypewriters) messenger bot. 
 
 ## Usage
 The poetry script provides an extensible class that allows generation of haikus, love poems, limericks, sonnets, and villanelles, with more forms of poetry planned. 
