@@ -35,6 +35,11 @@ python3 -i rhyme_dict.py [filename]
 
 in CLI. A `.pkl` file will be created in the same directory that contains the dictionary of rhyme sets for the input corpus.
 
+## Word Complexity Metric
+To optimize the flow of the poetry, words that were too complex were filtered out. To measure the complexity of a word, Stoel-Gammon's Word Complexity Measure was employed (C. Stoel-Gammon. 2010. The Word Complexity Measure: Description and application to developmental phonology and disorders. Clinical Linguistics and Phonetics 24(4-5): 271-282).
+
+Complicated phonemes and long syllable clusters increase a word's complexity score. See `stress_dict.py` for the implementation as well as metric rules and details. 
+
 ## Benchmarks
 <b>NOTE:</b> The script has now been optimized to call from a pre-compiled dictionary of rhymes and stresses. The runtimes listed below, while obsolete, are a good indication of the complexity of the poetry format. The runtimes are not nearly as long though; most poems are now created almost instantly on the given specifications.
 
