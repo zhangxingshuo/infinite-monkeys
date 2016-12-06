@@ -142,6 +142,10 @@ class rhymer(object):
         return ret_dict
 
 if __name__ == '__main__':
-    filename = sys.argv[1]
+    try:
+        filename = sys.argv[1]
+    except:
+        print('Usage: python3 rhyme_dict.py [<path to file>]')
+        sys.exit(1)
     rhyme = rhymer(filename)
     rhyme.write()

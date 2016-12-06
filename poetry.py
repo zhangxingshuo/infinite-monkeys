@@ -615,7 +615,7 @@ class Poet(object):
                 word = random.choice(self.word_list)
 
                 # Words with too many phonemes do not flow well
-                while self.complexity(word) > 3:
+                while self.complexity(word) > 2.5:
                     word = random.choice(self.word_list)
 
                 tries += 1
