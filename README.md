@@ -27,13 +27,22 @@ Thank validation
 Composed in 0.01 seconds
 ```
 
+### Pre-compiled Dictionaries
 To utilize rhymes between words in the work, a rhyming dictionary must be compiled before running the `poetry.py` script. To compile the dictionary of rhymes, run
 
 ```
-python3 -i rhyme_dict.py [filename]
+python3 rhyme_dict.py [filename]
 ```
 
-in CLI. A `.pkl` file will be created in the same directory that contains the dictionary of rhyme sets for the input corpus.
+A `.pkl` file will be created in the same directory that contains the dictionary of rhyme sets for the input corpus.
+
+To eliminate the overhead from finding the word cadences, a dictionary of word stress and complexity metric (see below) needs to be created beforehand and named `cmudict.pkl`. Note that this file is already included, but if the stress dictionary is updated or the complexity metric is changed, this dictionary needs to be created again. This can be done by running
+
+```
+python3 stress_dict.py
+```
+
+The `cmudict.pkl` file will be created in the root directory. 
 
 ## Word Complexity Metric
 To optimize the flow of the poetry, words that were too complex were filtered out. To measure the complexity of a word, Stoel-Gammon's Word Complexity Measure was employed (C. Stoel-Gammon. 2010. The Word Complexity Measure: Description and application to developmental phonology and disorders. Clinical Linguistics and Phonetics 24(4-5): 271-282).
@@ -58,5 +67,10 @@ Quatrain | 5.75s | 10.36s | 4.08s |
 Villanelle | 30.15s | 59.61s | 13.33s |
 Ballade | 40.28s | 64.28s | 22.05s |
 
+## Social Network Integration
+
 ## Tweeting
 The file `tweet.py` contains methods that allow for the generation of short 140-character poems by randomly selecting a poetry format and brute-forcing until the poem is below 140 characters. Note that this limitation necessarily disqualifies long-format poems such as the villanelle, ballade, and sonnet.
+
+## Messenger
+For the Facebook Messenger script and its changes, see the Github repository [messsenger-bot](www.github.com/zhangxingshuo/messsenger-bot). The bot is deployed on a Heroku cloud app. Since this cloud server runs Python 2.7, the dictionaries need to be dumped into Python2 pickle files, and NLTK needs to be installed on Python 2.7 if modifications wish to be made. 
