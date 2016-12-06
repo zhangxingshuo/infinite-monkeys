@@ -95,7 +95,7 @@ class rhymer(object):
                 for pron in self.dict[word]:
                     if pron[-level:] == syllable[-level:] and pron != syllable:
                         rhymes += [word]
-            # rhymes = [word for word in self.word_list if self.dict[word][0][-level:] == syllable[-level:]]
+
             rhyming_set = set(rhymes)
             total_rhymes.update(rhyming_set)
 

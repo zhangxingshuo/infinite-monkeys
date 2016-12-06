@@ -6,6 +6,9 @@ words using the CMU Pronunciation Dictionary.
 
 Note that only the primary pronunciation is considered.
 
+Also supports grouping phonemes into syllable clusters,
+as well as the Stoel-Gammon Word Complexity Measure (WCM)
+
 Usage:
 ------
     python3 cmudict_parse.py
@@ -17,6 +20,9 @@ import nltk
 from nltk.corpus import cmudict
 import pickle
 import sys
+
+import os
+path = os.getcwd()
 
 # Print iterations progress
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1, barLength = 100):
@@ -170,7 +176,7 @@ class cmudict_parser(object):
         '''
         ret_dict = {}
 
-        print("Writing to cmudict.pkl...")
+        print("Writing to " + path + "/data/cmudict.pkl...")
         count = 0
         printProgress(count, len(self.dict), prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 
@@ -180,7 +186,7 @@ class cmudict_parser(object):
             count += 1
             printProgress(count, len(self.dict), prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 
-        pickle.dump( ret_dict, open('cmudict.pkl', 'wb') )
+        pickle.dump( ret_dict, open(path + '/data/cmudict.pkl', 'wb') )
 
         return ret_dict
 
