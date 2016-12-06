@@ -48,8 +48,6 @@ class Poet(object):
 
     def __init__(self, filename=None):
 
-        self.filename = filename
-
         # Import the CMU dictionary of pronunciation and stress
         self.dict = pickle.load( open(path + '/data/cmudict.pkl', 'rb') ) 
 
@@ -62,9 +60,8 @@ class Poet(object):
         # Try to find the rhyming dictionary file
         # If it does not exist, default to the 10,000 most common words from Google
         try:
-            self.rhyme_dict = pickle.load( open(os.path.splitext(self.filename)[0] + '.pkl', 'rb') )
+            self.rhyme_dict = pickle.load( open(os.path.splitext(filename)[0] + '.pkl', 'rb') )
         except:
-            # print('Rhyming dictionary not found. Using default English rhyming.')
             self.rhyme_dict = pickle.load( open(path + '/data/english.pkl', 'rb') )
 
 
@@ -217,8 +214,6 @@ class Poet(object):
         for i in range(12, 14):
             string_to_add = ' '.join(sonnet[i])
 
-            # Italicize last two lines (may not work in some consoles)
-            # final_poem += '    ' + '\x1B[3m' + string_to_add[0].upper() + string_to_add[1:] + '\x1B[23m\n'
             final_poem += string_to_add[0].upper() + string_to_add[1:] + '\n'
 
         return final_poem
