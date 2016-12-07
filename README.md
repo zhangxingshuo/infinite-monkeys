@@ -67,6 +67,15 @@ Quatrain | 5.75s | 10.36s | 4.08s |
 Villanelle | 30.15s | 59.61s | 13.33s |
 Ballade | 40.28s | 64.28s | 22.05s |
 
+## General Methods
+A separate script, `lang_utils.py` provides functionality for rhyming, streses, syllable splitting, and complexity without any of the poetry generation. The methods provided are `rhyme_set()`, `rhyme()`, `stress()`, `syllables()`, and `complexity()`. Either import `lang_utils` or run
+
+```
+python3 -i lang_utils.py
+```
+
+to utilize these methods. 
+
 ## Social Network Integration
 
 ## Tweeting
