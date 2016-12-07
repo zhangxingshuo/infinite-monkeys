@@ -162,7 +162,7 @@ class cmudict_parser(object):
                 syl = []
 
         # If last phoneme sequence does not contain vowel, append to last syllable
-        if syl != '' and len(syls) > 1:
+        if syl != '' and len(syls) > 0:
             syls[-1].extend(syl)
         else:
             syls.append(syl)

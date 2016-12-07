@@ -84,7 +84,12 @@ class rhymer(object):
         '''
 
         # Get the pronunciation of the word
-        syllables = self.dict[input_word]
+        raw_syllables = self.dict[input_word]
+
+        # Discard stresses
+        syllables = []
+        for syllable in raw_syllables:
+            syllables += [list(map(self.sanitize, syllable))]
 
         total_rhymes = set()
 
@@ -92,17 +97,30 @@ class rhymer(object):
         for syllable in syllables:
             rhymes = []
             for word in self.word_list:
-                for pron in self.dict[word]:
+                for raw_pron in self.dict[word]:
+                    # Discard stresses
+                    pron = list(map(self.sanitize, raw_pron))
                     if pron[-level:] == syllable[-level:] and pron != syllable:
                         rhymes += [word]
 
             rhyming_set = set(rhymes)
             total_rhymes.update(rhyming_set)
 
-        # The input does not rhyme with itself
-        # total_rhymes.remove(input_word)
-
         return total_rhymes
+
+    def rhyme(self, word):
+        '''
+        Determines the optimal rhyme level for a word and returns the 
+        corresponding rhyme set
+        '''
+        num_elements = len(self.dict[word][0])
+        if num_elements < 4:
+            rhyme_level = num_elements
+        else:
+            rhyme_level = num_elements - 1
+
+        # Get the rhyming set
+        return self.rhyme_set(word, rhyme_level)
 
     def write(self):
         '''

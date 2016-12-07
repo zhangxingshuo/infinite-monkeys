@@ -69,6 +69,18 @@ class Poet(object):
     ### Poetry ###
     ##############
 
+    def print_random(self):
+        '''
+        Composes a random poem from available selection
+        '''
+
+        start = time.time()
+
+        print(self.compose_random_poem())
+
+        end = time.time()
+        print('Composed in %0.2f seconds' % (end-start))
+
     def compose_random_poem(self):
         '''
         Composes a random poem from the available forms of poetry.
@@ -1041,3 +1053,7 @@ class Poet(object):
         poem[11] = c_rhymes[1]
 
         return poem
+
+if __name__ == '__main__':
+    poet = Poet()
+    poet.print_random()
